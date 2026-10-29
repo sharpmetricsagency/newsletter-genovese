@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Editor Newsletter Genovese</title>
+<link rel="icon" type="image/png" href="https://cdn.shopify.com/s/files/1/0788/7716/3848/files/0B1134-removebg-preview.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f3f5f9;
+    --panel: #ffffff;
+    --muted-bg: #f3f5f9;
+    --ink: #0b1134;
+    --text: #0b1134;
+    --muted: #484d67;
+    --subtle: #686b81;
+    --line: #e2e3e8;
+    --line-strong: #c9cbd6;
+    --accent: #ffa000;
+    --warn-bg: #fff4dc;
+    --warn: #6e4a00;
+    --danger: #c8191f;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  button, input, textarea, select { font: inherit; color: inherit; }
+
+  /* ---------- Barra superiore ---------- */
+  .appbar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    padding: 10px 20px; background: var(--ink); color: #fff;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .brand img { height: 34px; width: auto; display: block; }
+  .brand .sub { font-size: 13px; color: rgba(255,255,255,.72); white-space: nowrap; }
+  .actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    appearance: none; border: 0; border-radius: 6px; cursor: pointer;
+    padding: 9px 14px; font-size: 13px; font-weight: 600; line-height: 1;
+    display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+    transition: background-color .15s, color .15s, box-shadow .15s, transform .1s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn-ghost { background: transparent; color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); }
+  .btn-ghost:hover { box-shadow: inset 0 0 0 1px rgba(255,255,255,.7); }
+  .btn-primary { background: var(--accent); color: var(--ink); font-family: Poppins, Inter, sans-serif; }
+  .btn-primary:hover { background: #ffb329; }
+
+  /* ---------- Layout ---------- */
+  .layout {
+    display: grid; grid-template-columns: minmax(360px, 480px) minmax(0, 1fr);
+    gap: 20px; padding: 20px; align-items: start; max-width: 1600px; margin: 0 auto;
+  }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+
+  /* ---------- Form ---------- */
+  .form section { padding: 20px 22px; border-bottom: 1px solid var(--line); }
+  .form section:last-child { border-bottom: 0; }
+  .sec-title { display: flex; align-items: center; gap: 10px; margin: 0 0 4px; font: 600 15px/1.3 Poppins, Inter, sans-serif; color: var(--ink); }
+  .sec-desc { margin: 0 0 16px; font-size: 12.5px; color: var(--subtle); }
+  .num {
+    width: 22px; height: 22px; border-radius: 50%; flex: none;
+    display: inline-grid; place-items: center;
+    background: var(--ink); color: var(--accent); font-size: 12px; font-weight: 600;
+  }
+  .f { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; min-width: 0; }
+  .f > span { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .f em { font-style: normal; font-weight: 400; color: var(--subtle); }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  input, textarea, select {
+    width: 100%; min-width: 0; border: 1px solid var(--line-strong); border-radius: 8px;
+    padding: 9px 11px; background: #fff; color: var(--text);
+  }
+  textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
+  input:focus, textarea:focus, select:focus { outline: 2px solid var(--ink); outline-offset: -1px; border-color: var(--ink); }
+  input::placeholder, textarea::placeholder { color: #9a9cad; }
+  input[readonly] { background: var(--muted-bg); color: var(--subtle); }
+  .check { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; }
+  .check input { width: 18px; height: 18px; accent-color: var(--ink); }
+  .help { margin: -4px 0 12px; font-size: 12px; color: var(--subtle); }
+  .help code { font-size: 11.5px; background: var(--muted-bg); padding: 1px 5px; border-radius: 5px; }
+
+  details.brandset > summary {
+    list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px;
+    font: 600 15px/1.3 Poppins, Inter, sans-serif; color: var(--ink);
+  }
+  details.brandset > summary::-webkit-details-marker { display: none; }
+  details.brandset > summary .chev { margin-left: auto; transition: transform .2s; color: var(--subtle); }
+  details.brandset[open] > summary .chev { transform: rotate(180deg); }
+  details.brandset[open] > summary { margin-bottom: 14px; }
+
+  /* ---------- Prodotti ---------- */
+  .prod { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 12px; background: var(--muted-bg); }
+  .prod-head { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+  .thumb { width: 48px; height: 48px; border-radius: 8px; background: #fff; overflow: hidden; flex: none; border: 1px solid var(--line); }
+  .thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .prod-title { min-width: 0; flex: 1; }
+  .prod-title strong { display: block; font-size: 13px; color: var(--ink); }
+  .prod-title span { display: block; font-size: 12px; color: var(--subtle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .prod-actions { display: flex; gap: 4px; flex: none; }
+  .icon-btn {
+    width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line-strong);
+    background: #fff; color: var(--ink); cursor: pointer; display: inline-grid; place-items: center; padding: 0;
+  }
+  .icon-btn svg { width: 14px; height: 14px; }
+  .icon-btn:hover { border-color: var(--ink); }
+  .icon-btn:disabled { opacity: .35; cursor: default; border-color: var(--line-strong); }
+  .icon-btn.danger:hover { color: var(--danger); border-color: var(--danger); }
+  .icon-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+  .prod .f { margin-bottom: 8px; }
+  .prod input { padding: 8px 10px; }
+  .hints:empty { display: none; }
+  .hint { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px; font-size: 12px; color: var(--warn); }
+  .add {
+    width: 100%; border: 1.5px dashed var(--line-strong); background: transparent; border-radius: 12px;
+    padding: 12px; font-size: 13px; font-weight: 600; color: var(--ink); cursor: pointer;
+  }
+  .add:hover { border-color: var(--ink); background: var(--muted-bg); }
+  .quick { border: 1px solid var(--line); border-radius: 12px; padding: 12px 12px 2px; margin-bottom: 14px; }
+  .quick textarea { min-height: 0; }
+  .quick-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: -2px 0 10px; }
+  .quick-status { font-size: 12px; color: var(--muted); }
+  .quick-status.err { color: var(--danger); }
+  .quick .help { margin: 0 0 10px; }
+  .btn-dark { background: var(--ink); color: #fff; padding: 9px 14px; }
+  .btn-dark:hover { background: #1c2456; }
+  .btn-dark:disabled { opacity: .55; cursor: progress; }
+  .btn-line { background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-strong); }
+  .btn-line:hover { box-shadow: inset 0 0 0 1px var(--ink); }
+  .icon-btn.busy svg { animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .note { background: var(--warn-bg); color: var(--warn); border-radius: 8px; padding: 10px 12px; font-size: 12px; margin: 0 0 12px; }
+  .note[hidden] { display: none; }
+
+  .howto ol { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+  .howto li { margin-bottom: 6px; }
+  .howto strong { color: var(--ink); }
+
+  /* ---------- Anteprima ---------- */
+  .preview {
+    position: sticky; top: 74px; height: calc(100vh - 94px); min-height: 520px;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .preview-bar { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .preview-bar h2 { margin: 0; font: 600 14px/1.3 Poppins, Inter, sans-serif; color: var(--ink); }
+  .seg { display: inline-flex; background: var(--muted-bg); border-radius: 8px; padding: 3px; }
+  .seg button { border: 0; background: transparent; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(11,17,52,.14); }
+  .size { margin-left: auto; font-size: 12px; color: var(--subtle); font-variant-numeric: tabular-nums; }
+  .size.bad { color: var(--danger); font-weight: 600; }
+  .frame-wrap { flex: 1; display: flex; justify-content: center; background: var(--bg); min-height: 0; }
+  .frame-wrap iframe { border: 0; width: 100%; height: 100%; background: var(--bg); }
+  .frame-wrap.is-mobile iframe { width: 390px; max-width: 100%; box-shadow: 0 0 0 1px var(--line); }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 22px; z-index: 50; max-width: calc(100% - 32px);
+    transform: translate(-50%, 16px); opacity: 0; pointer-events: none;
+    background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 8px; font-size: 13px;
+    transition: opacity .2s, transform .2s; box-shadow: 0 8px 24px rgba(11,17,52,.25);
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (max-width: 1000px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    .preview { position: relative; top: 0; height: 80vh; }
+  }
+  @media (max-width: 600px) {
+    .appbar { padding: 10px 16px; }
+    .brand .sub { display: none; }
+    .actions { margin-left: 0; width: 100%; }
+    .layout { padding: 16px; gap: 16px; }
+    .form section { padding: 18px 16px; }
+    .row2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <div class="brand"><img src="https://cdn.shopify.com/s/files/1/0788/7716/3848/files/GENOVESE_6_1.png" alt="Genovese materiale elettrico"><span class="sub">Editor newsletter per Shopify Messaging</span></div>
+  <div class="actions">
+    <button type="button" class="btn btn-ghost" id="btn-reset">Ripristina esempio</button>
+    <button type="button" class="btn btn-ghost" id="btn-import">Apri bozza</button>
+    <button type="button" class="btn btn-ghost" id="btn-export">Salva bozza</button>
+    <button type="button" class="btn btn-ghost" id="btn-download">Scarica .html</button>
+    <button type="button" class="btn btn-primary" id="btn-copy">Copia HTML</button>
+    <input type="file" id="file-import" accept="application/json,.json" class="sr-only" tabindex="-1" aria-hidden="true">
+  </div>
+</header>
+
+<main class="layout">
+  <form class="panel form" id="form" autocomplete="off" onsubmit="return false">
+
+    <section>
+      <h2 class="sec-title"><span class="num">1</span>Testata</h2>
+      <p class="sec-desc">Logo e piè di pagina sono fissi (vedi «Impostazioni brand» in fondo).</p>
+      <label class="f"><span>Testo di anteprima nella casella <em>(preheader)</em></span>
+        <input data-key="preheader" maxlength="140" placeholder="Il testo grigio che compare accanto all'oggetto">
+      </label>
+      <p class="help">Scrivilo uguale anche nel campo «Testo di anteprima» della campagna in Messaging.</p>
+      <label class="f"><span>Barra arancione in alto <em>(vuota = nascosta)</em></span>
+        <input data-key="topbar" placeholder="Spedizione in 24/48 ore · Paga in 3 rate con Klarna">
+      </label>
+      <label class="f"><span>Link sotto il logo <em>(uno per riga: Etichetta | URL; vuoto = nascosti)</em></span>
+        <textarea data-key="nav" rows="3"></textarea>
+      </label>
+    </section>
+
+    <section>
+      <h2 class="sec-title"><span class="num">2</span>Banner</h2>
+      <p class="sec-desc">A tutta larghezza, 1200×800 px (3:2), JPG o PNG caricato in Contenuti › File di Shopify. URL vuoto = nessun banner.</p>
+      <label class="f"><span>URL immagine banner</span><input data-key="banner.src" type="url" placeholder="https://cdn.shopify.com/s/files/…"></label>
+      <label class="f"><span>Link al clic</span><input data-key="banner.href" type="url" placeholder="https://www.genovesematerialeelettrico.com/…"></label>
+      <label class="f"><span>Testo alternativo <em>(se le immagini sono bloccate)</em></span><input data-key="banner.alt"></label>
+      <p class="note" id="banner-note" hidden></p>
+    </section>
+
+    <section>
+      <h2 class="sec-title"><span class="num">3</span>Titolo e testo</h2>
+      <p class="sec-desc">Ogni campo vuoto viene semplicemente omesso.</p>
+      <label class="f"><span>Targhetta <em>(navy e arancione, come «Black Week» sul sito)</em></span><input data-key="eyebrow" placeholder="Black Week"></label>
+      <label class="f"><span>Titolo</span><input data-key="title"></label>
+      <label class="f"><span>Testo</span><textarea data-key="text" rows="5"></textarea></label>
+      <p class="help">Riga vuota = nuovo paragrafo. <code>**parola**</code> = grassetto. Il nome del cliente: <code>{{ customer.first_name }}</code>.</p>
+      <div class="row2">
+        <label class="f"><span>Pulsante <em>(opz.)</em></span><input data-key="cta.label" placeholder="Scopri le offerte"></label>
+        <label class="f"><span>Link pulsante</span><input data-key="cta.href" type="url" placeholder="https://…"></label>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="sec-title"><span class="num">4</span>Reparti</h2>
+      <p class="sec-desc">Riquadri cliccabili come «Scegli il reparto» della home: 3 per riga, 2 sul telefono. Vuoto = nessun riquadro.</p>
+      <label class="f"><span>Titolo <em>(opz.)</em></span><input data-key="reparti.title" placeholder="Scegli il reparto"></label>
+      <label class="f"><span>Riquadri <em>(uno per riga: Etichetta | URL)</em></span><textarea data-key="reparti.list" rows="4"></textarea></label>
+    </section>
+
+    <section>
+      <h2 class="sec-title"><span class="num">5</span>Prodotti <span class="sec-desc" id="prod-count" style="margin:0 0 0 auto;font-weight:500"></span></h2>
+      <p class="sec-desc">Schede come sul sito, 2 per riga. Ordine = ordine di visualizzazione. Meglio un numero pari.</p>
+      <div class="row2">
+        <label class="f"><span>Titolo sezione <em>(opz.)</em></span><input data-key="productsTitle" placeholder="I più scelti"></label>
+        <label class="f"><span>Testo pulsante</span><input data-key="productCta" placeholder="Vedi prodotto"></label>
+      </div>
+      <div class="row2">
+        <label class="f"><span>Prezzi</span>
+          <select data-key="prices">
+            <option value="live">Dal vivo (letti all'invio)</option>
+            <option value="fixed">Fissi (quelli scritti qui)</option>
+            <option value="none">Nessun prezzo</option>
+          </select>
+        </label>
+        <label class="f"><span>Targhetta sulle schede <em>(opz.)</em></span><input data-key="cardBadge" placeholder="Black Week"></label>
+      </div>
+      <p class="help" id="prices-help"></p>
+      <div class="quick">
+        <label class="f"><span>Aggiungi da link <em>(incolla uno o più link, uno per riga)</em></span>
+          <textarea id="quick-links" rows="2" placeholder="https://www.genovesematerialeelettrico.com/products/…"></textarea>
+        </label>
+        <div class="quick-row">
+          <button type="button" class="btn btn-dark" id="btn-quick">Aggiungi dal sito</button>
+          <button type="button" class="btn btn-line" id="btn-sync-all">↻ Aggiorna tutti</button>
+          <span class="quick-status" id="quick-status" role="status" aria-live="polite"></span>
+        </div>
+        <p class="help">Nome, marca, prezzo, prezzo barrato, foto e disponibilità vengono letti dal negozio. Accorcia i nomi lunghi: nella scheda stanno 3 righe.</p>
+      </div>
+      <div id="products"></div>
+      <button type="button" class="add" id="btn-add">+ Aggiungi prodotto</button>
+    </section>
+
+    <section>
+      <h2 class="sec-title"><span class="num">6</span>Chiusura</h2>
+      <p class="sec-desc">Un ultimo messaggio dopo i prodotti, con pulsante navy. Tutto facoltativo.</p>
+      <label class="f"><span>Titolo</span><input data-key="outro.title" placeholder="Si chiude domenica a mezzanotte"></label>
+      <label class="f"><span>Testo</span><textarea data-key="outro.text" rows="3"></textarea></label>
+      <div class="row2">
+        <label class="f"><span>Pulsante</span><input data-key="outro.label"></label>
+        <label class="f"><span>Link pulsante</span><input data-key="outro.href" type="url"></label>
+      </div>
+      <label class="check"><input type="checkbox" data-key="vantaggi"> Mostra la barra dei vantaggi (spedizione, Klarna, reso, assistenza)</label>
+    </section>
+
+    <section>
+      <details class="brandset">
+        <summary><span class="num">7</span>Impostazioni brand
+          <svg class="chev" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </summary>
+        <label class="f"><span>URL logo <em>(PNG su fondo navy)</em></span><input data-key="brand.logo" type="url"></label>
+        <div class="row2">
+          <label class="f"><span>Larghezza logo (px)</span><input data-key="brand.logoWidth" type="number" min="100" max="260" step="2"></label>
+          <label class="f"><span>Link del logo</span><input data-key="brand.site" type="url"></label>
+        </div>
+        <div class="row2">
+          <label class="f"><span>Telefono</span><input data-key="brand.phone"></label>
+          <label class="f"><span>Email</span><input data-key="brand.email" type="email"></label>
+        </div>
+        <label class="f"><span>Link WhatsApp</span><input data-key="brand.whatsapp" type="url"></label>
+        <label class="f"><span>Social <em>(uno per riga: Etichetta | URL)</em></span><textarea data-key="brand.social" rows="2"></textarea></label>
+        <label class="f"><span>Link nel piè di pagina <em>(uno per riga: Etichetta | URL)</em></span><textarea data-key="brand.footerLinks" rows="4"></textarea></label>
+        <label class="f"><span>Riga legale</span><input data-key="brand.legal"></label>
+        <label class="f"><span>Nota sopra la disiscrizione</span><input data-key="brand.footerNote"></label>
+      </details>
+    </section>
+
+    <section class="howto">
+      <h2 class="sec-title"><span class="num">?</span>Come usarlo in Shopify Messaging</h2>
+      <ol>
+        <li>Compila i campi: l'anteprima si aggiorna da sola e le modifiche restano salvate in questo browser.</li>
+        <li>Per i prodotti incolla i link in <strong>Aggiungi da link</strong>. Con <strong>↻</strong> riallinei una scheda al negozio, con <strong>Aggiorna tutti</strong> tutte insieme.</li>
+        <li>Clicca <strong>Copia HTML</strong>.</li>
+        <li>In Shopify: <strong>Marketing › Messaging › Crea campagna › Email › Code your own</strong> (Crea il tuo codice) e incolla il codice al posto di quello d'esempio.</li>
+        <li>Nella campagna scrivi <strong>oggetto</strong> e <strong>testo di anteprima</strong>, scegli i destinatari, mandati una <strong>prova</strong> e poi programma l'invio.</li>
+        <li>Per passare il lavoro a un collega usa <strong>Salva bozza</strong> / <strong>Apri bozza</strong> (file .json).</li>
+      </ol>
+    </section>
+  </form>
+
+  <section class="panel preview" aria-label="Anteprima email">
+    <div class="preview-bar">
+      <h2>Anteprima</h2>
+      <div class="seg" role="group" aria-label="Dispositivo">
+        <button type="button" data-device="desktop" aria-pressed="true">Desktop</button>
+        <button type="button" data-device="mobile" aria-pressed="false">Telefono</button>
+      </div>
+      <span class="size" id="size"></span>
+    </div>
+    <div class="frame-wrap" id="frame-wrap">
+      <iframe id="frame" title="Anteprima della newsletter"></iframe>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Builder email condiviso con il generatore delle campagne -->
+<script src="render-email.js"></script>
+
+<!-- ===================================================================
+     EDITOR — interfaccia, salvataggio bozza, anteprima, copia/scarica.
+     =================================================================== -->
+<script>
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'gm-newsletter-editor-v1';
+  // Storefront API pubblica del negozio, senza token: sola lettura, CORS aperto.
+  var STOREFRONT = 'https://557b0c.myshopify.com/api/2026-10/graphql.json';
+  var GM = window.GM_EMAIL;
+  var build = GM.build;
+  var DEFAULTS = GM.defaults;
+  var EMPTY_PRODUCT = { handle: '', name: '', vendor: '', price: '', oldPrice: '', href: '', img: '', cta: '' };
+  var $ = function (s, el) { return (el || document).querySelector(s); };
+  var $$ = function (s, el) { return Array.prototype.slice.call((el || document).querySelectorAll(s)); };
+
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function normalize(s) {
+    var base = clone(DEFAULTS);
+    if (!s || typeof s !== 'object') return base;
+    var out = Object.assign(base, s);
+    ['banner', 'cta', 'reparti', 'outro', 'brand'].forEach(function (k) {
+      out[k] = Object.assign(clone(DEFAULTS[k]), s[k] || {});
+    });
+    out.products = Array.isArray(s.products) ? s.products.map(function (p) {
+      return Object.assign(clone(EMPTY_PRODUCT), p || {});
+    }) : clone(DEFAULTS.products);
+    return out;
+  }
+  function load() {
+    try { var raw = localStorage.getItem(STORAGE_KEY); return raw ? normalize(JSON.parse(raw)) : null; }
+    catch (e) { return null; }
+  }
+  function persist() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* storage non disponibile */ }
+  }
+
+  var state = load() || clone(DEFAULTS);
+
+  function getPath(o, path) { return path.split('.').reduce(function (a, k) { return a == null ? a : a[k]; }, o); }
+  function setPath(o, path, v) {
+    var ks = path.split('.'), a = o;
+    ks.slice(0, -1).forEach(function (k) { if (a[k] == null || typeof a[k] !== 'object') a[k] = {}; a = a[k]; });
+    a[ks[ks.length - 1]] = v;
+  }
+
+  /* ---------- Campi semplici ---------- */
+  function fillForm() {
+    $$('[data-key]').forEach(function (el) {
+      var v = getPath(state, el.dataset.key);
+      if (el.type === 'checkbox') el.checked = v !== false;
+      else el.value = v == null ? '' : v;
+    });
+    pricesHelp();
+  }
+  $$('[data-key]').forEach(function (el) {
+    var ev = el.tagName === 'SELECT' || el.type === 'checkbox' ? 'change' : 'input';
+    el.addEventListener(ev, function () {
+      var v = el.type === 'checkbox' ? el.checked : el.type === 'number' ? (parseInt(el.value, 10) || '') : el.value;
+      setPath(state, el.dataset.key, v);
+      if (el.dataset.key === 'productCta') $$('[data-pkey="cta"]').forEach(function (i) { i.placeholder = el.value || 'Vedi prodotto'; });
+      if (el.dataset.key === 'prices') { pricesHelp(); renderProducts(); }
+      schedule();
+    });
+  });
+  function pricesHelp() {
+    var t = {
+      live: 'Shopify legge prezzo e barrato al momento dell\'invio: in Black Week compaiono da soli i prezzi scontati. Se un prodotto non è più disponibile, la sua scheda non viene inviata. L\'anteprima qui mostra i prezzi scritti nelle schede.',
+      fixed: 'Nell\'email vanno i prezzi scritti nelle schede. Prima di inviare usa «Aggiorna tutti».',
+      none: 'Le schede mostrano solo foto, nome e pulsante: utile per un teaser.'
+    };
+    $('#prices-help').textContent = t[state.prices] || t.live;
+  }
+
+  /* ---------- Prodotti ---------- */
+  var ICONS = {
+    up: '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    down: '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    dup: '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="5" y="5" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M3 10.5V4a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    del: '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    sync: '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 8a5 5 0 0 1-8.6 3.5M3 8a5 5 0 0 1 8.6-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M11.5 1.8v2.9H8.6M4.5 14.2v-2.9h2.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  };
+
+  /* ---------- Lettura prodotto dal negozio (Storefront API) ---------- */
+  var QUERY = 'query($h:String!){product(handle:$h){handle title vendor availableForSale featuredImage{url} ' +
+    'selectedOrFirstAvailableVariant{price{amount} compareAtPrice{amount}}}}';
+  var loading = typeof WeakSet !== 'undefined' ? new WeakSet() : { has: function () { return false; }, add: function () {}, delete: function () {} };
+
+  // Accetta un link del negozio (anche /collections/x/products/y?variant=…) oppure l'handle da solo.
+  function handleFrom(v) {
+    var s = String(v || '').trim();
+    var m = s.match(/\/products\/([a-z0-9][a-z0-9\-_%]*)/i);
+    if (m) return decodeURIComponent(m[1]).toLowerCase();
+    return /^[a-z0-9][a-z0-9\-]*$/i.test(s) ? s.toLowerCase() : '';
+  }
+  function money(n) { return GM.fmtPrice(String(n)).replace('€', ''); }
+
+  function fetchProduct(ref) {
+    var h = handleFrom(ref);
+    if (!h) return Promise.reject(new Error('Link non valido: serve un link a /products/… del negozio.'));
+    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var timeout = ctrl ? setTimeout(function () { ctrl.abort(); }, 15000) : null;
+    return fetch(STOREFRONT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: QUERY, variables: { h: h } }),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (r) {
+      return r.json().catch(function () { throw new Error('Risposta non valida dal negozio (' + r.status + ').'); });
+    }, function () {
+      throw new Error('Connessione al negozio non riuscita: controlla la rete e riprova.');
+    }).then(function (res) {
+      clearTimeout(timeout);
+      var p = res && res.data && res.data.product;
+      if (!p) throw new Error('Prodotto «' + h + '» non trovato o non pubblicato.');
+      var v = p.selectedOrFirstAvailableVariant || {};
+      var price = v.price ? parseFloat(v.price.amount) : NaN;
+      var old = v.compareAtPrice ? parseFloat(v.compareAtPrice.amount) : NaN;
+      return {
+        handle: p.handle,
+        name: p.title,
+        vendor: p.vendor || '',
+        price: isNaN(price) ? '' : money(price),
+        oldPrice: !isNaN(old) && old > price ? money(old) : '',
+        href: GM.site + '/products/' + p.handle,
+        img: p.featuredImage ? p.featuredImage.url : '',
+        inStock: p.availableForSale !== false
+      };
+    });
+  }
+  // Aggiorna dati e prezzi; il nome accorciato a mano resta com'è.
+  function applyProduct(p, data, keepName) {
+    p.handle = data.handle;
+    if (!keepName || !String(p.name || '').trim()) p.name = data.name;
+    p.vendor = data.vendor;
+    p.price = data.price;
+    p.oldPrice = data.oldPrice;
+    p.href = data.href;
+    p.img = data.img || p.img || '';
+    p.outOfStock = !data.inStock;
+  }
+
+  function hintsFor(p) {
+    var out = [];
+    if (!String(p.href || '').trim()) out.push('Manca il link al prodotto.');
+    else if (state.prices === 'live' && !String(p.handle || '').trim()) out.push('Manca l\'handle: clicca ↻ per leggerlo dal negozio, altrimenti il prezzo resta fisso.');
+    if (!String(p.img || '').trim()) out.push('Manca l\'URL dell\'immagine.');
+    else if (!/^https:\/\/cdn\.shopify\.com\//.test(p.img.trim())) out.push('Immagine fuori da Shopify: meglio caricarla in Contenuti › File.');
+    if (String(p.name || '').trim().length > 52) out.push('Nome lungo (' + p.name.trim().length + ' caratteri): accorcialo, nella scheda stanno 3 righe.');
+    if (p.outOfStock) out.push('Risulta esaurito sul negozio: valuta di toglierlo.');
+    return out;
+  }
+
+  function productItem(p, i, total) {
+    var el = document.createElement('div');
+    el.className = 'prod';
+    el.innerHTML =
+      '<div class="prod-head">' +
+        '<div class="thumb"><img alt=""></div>' +
+        '<div class="prod-title"><strong>Prodotto ' + (i + 1) + '</strong><span class="pname"></span></div>' +
+        '<div class="prod-actions">' +
+          '<button type="button" class="icon-btn" data-act="sync" title="Aggiorna dal negozio (prezzo, foto, disponibilità)" aria-label="Aggiorna dal negozio il prodotto ' + (i + 1) + '">' + ICONS.sync + '</button>' +
+          '<button type="button" class="icon-btn" data-act="up" title="Sposta su" aria-label="Sposta su il prodotto ' + (i + 1) + '"' + (i === 0 ? ' disabled' : '') + '>' + ICONS.up + '</button>' +
+          '<button type="button" class="icon-btn" data-act="down" title="Sposta giù" aria-label="Sposta giù il prodotto ' + (i + 1) + '"' + (i === total - 1 ? ' disabled' : '') + '>' + ICONS.down + '</button>' +
+          '<button type="button" class="icon-btn" data-act="dup" title="Duplica" aria-label="Duplica il prodotto ' + (i + 1) + '">' + ICONS.dup + '</button>' +
+          '<button type="button" class="icon-btn danger" data-act="del" title="Elimina" aria-label="Elimina il prodotto ' + (i + 1) + '">' + ICONS.del + '</button>' +
+        '</div>' +
+      '</div>' +
+      '<label class="f"><span>Nome <em>(come appare nella mail)</em></span><input data-pkey="name"></label>' +
+      '<label class="f"><span>Marca <em>(opz.)</em></span><input data-pkey="vendor"></label>' +
+      '<div class="row2">' +
+        '<label class="f"><span>Prezzo</span><input data-pkey="price" placeholder="58,00" inputmode="decimal"></label>' +
+        '<label class="f"><span>Prezzo barrato <em>(opz.)</em></span><input data-pkey="oldPrice" placeholder="—" inputmode="decimal"></label>' +
+      '</div>' +
+      '<label class="f"><span>Link prodotto</span><input data-pkey="href" type="url" placeholder="https://www.genovesematerialeelettrico.com/products/…"></label>' +
+      '<label class="f"><span>URL immagine</span><input data-pkey="img" type="url" placeholder="https://cdn.shopify.com/…"></label>' +
+      '<div class="row2">' +
+        '<label class="f"><span>Handle <em>(per i prezzi dal vivo)</em></span><input data-pkey="handle" readonly></label>' +
+        '<label class="f"><span>Testo pulsante <em>(opz.)</em></span><input data-pkey="cta"></label>' +
+      '</div>' +
+      '<div class="hints"></div>';
+
+    var thumb = $('.thumb img', el), pname = $('.pname', el), hints = $('.hints', el);
+    function refresh() {
+      var src = String(p.img || '').trim();
+      if (src) { thumb.src = GM.productImage(src); thumb.style.visibility = 'visible'; } else { thumb.removeAttribute('src'); thumb.style.visibility = 'hidden'; }
+      pname.textContent = [p.name, p.price ? GM.fmtPrice(p.price) : ''].filter(Boolean).join(' · ') || 'Nuovo prodotto';
+      hints.innerHTML = '';
+      hintsFor(p).forEach(function (h) {
+        var row = document.createElement('div');
+        row.className = 'hint';
+        row.textContent = h;
+        hints.appendChild(row);
+      });
+    }
+    function sync(btn, silent) {
+      if (!String(p.href || p.handle || '').trim()) {
+        toast('Inserisci prima il link del prodotto.');
+        $('[data-pkey="href"]', el).focus();
+        return Promise.resolve();
+      }
+      if (loading.has(p)) return Promise.resolve();
+      loading.add(p);
+      btn.classList.add('busy');
+      btn.disabled = true;
+      return fetchProduct(p.href || p.handle).then(function (data) {
+        applyProduct(p, data, true);
+        var idx = state.products.indexOf(p);
+        if (idx > -1 && el.isConnected) {
+          var hadFocus = btn === document.activeElement;
+          var fresh = productItem(p, idx, state.products.length);
+          el.replaceWith(fresh);
+          if (hadFocus) $('[data-act="sync"]', fresh).focus();
+        }
+        schedule();
+        if (!silent) toast('«' + p.name + '» aggiornato dal negozio.');
+      }, function (err) {
+        toast(err.message);
+        btn.classList.remove('busy');
+        btn.disabled = false;
+      }).then(function () { loading.delete(p); });
+    }
+    el._sync = function () { return sync($('[data-act="sync"]', el), true); };
+
+    $$('[data-pkey]', el).forEach(function (input) {
+      var k = input.dataset.pkey;
+      input.value = p[k] || '';
+      if (k === 'cta') input.placeholder = state.productCta || 'Vedi prodotto';
+      input.addEventListener('input', function () { p[k] = input.value; refresh(); schedule(); });
+      if (k === 'href') {
+        // Link incollato in una scheda vuota: compila subito dal negozio
+        var auto = function () {
+          if (!String(p.name || '').trim() && !String(p.img || '').trim() && handleFrom(p.href)) {
+            sync($('[data-act="sync"]', el), true);
+          }
+        };
+        input.addEventListener('paste', function () { setTimeout(auto, 0); });
+        input.addEventListener('change', auto);
+      }
+    });
+    $$('[data-act]', el).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var list = state.products, act = btn.dataset.act;
+        if (act === 'sync') { sync(btn, false); return; }
+        if (act === 'up' && i > 0) list.splice(i - 1, 0, list.splice(i, 1)[0]);
+        if (act === 'down' && i < list.length - 1) list.splice(i + 1, 0, list.splice(i, 1)[0]);
+        if (act === 'dup') list.splice(i + 1, 0, clone(p));
+        if (act === 'del') {
+          if (!confirm('Eliminare «' + (p.name || 'Prodotto ' + (i + 1)) + '»?')) return;
+          list.splice(i, 1);
+        }
+        renderProducts();
+        var focusIdx = act === 'up' ? i - 1 : act === 'down' ? i + 1 : act === 'dup' ? i + 1 : Math.min(i, list.length - 1);
+        var target = $$('.prod')[focusIdx];
+        if (target) $('[data-act="' + (act === 'del' ? 'dup' : act) + '"]', target).focus();
+        schedule();
+      });
+    });
+    refresh();
+    return el;
+  }
+
+  function renderProducts() {
+    var box = $('#products');
+    box.innerHTML = '';
+    state.products.forEach(function (p, i) { box.appendChild(productItem(p, i, state.products.length)); });
+    var n = state.products.length;
+    $('#prod-count').textContent = n === 1 ? '1 prodotto' : n + ' prodotti';
+  }
+
+  $('#btn-add').addEventListener('click', function () {
+    state.products.push(clone(EMPTY_PRODUCT));
+    renderProducts();
+    var items = $$('.prod');
+    var last = items[items.length - 1];
+    last.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    $('[data-pkey="href"]', last).focus({ preventScroll: true });
+    schedule();
+  });
+
+  /* ---------- Aggiungi da link / Aggiorna tutti ---------- */
+  var quickBusy = false;
+  function quickAdd() {
+    if (quickBusy) return;
+    var ta = $('#quick-links'), status = $('#quick-status'), btn = $('#btn-quick');
+    var links = ta.value.split(/[\s,]+/).map(function (s) { return s.trim(); }).filter(Boolean);
+    if (!links.length) {
+      status.className = 'quick-status err';
+      status.textContent = 'Incolla almeno un link.';
+      ta.focus();
+      return;
+    }
+    quickBusy = true;
+    btn.disabled = true;
+    status.className = 'quick-status';
+    var failed = [], added = 0;
+    links.reduce(function (chain, ref, i) {
+      return chain.then(function () {
+        status.textContent = 'Leggo il prodotto ' + (i + 1) + ' di ' + links.length + '…';
+        return fetchProduct(ref).then(function (data) {
+          var p = clone(EMPTY_PRODUCT);
+          applyProduct(p, data, false);
+          state.products.push(p);
+          added++;
+          renderProducts();
+          schedule();
+        }, function (err) {
+          failed.push({ link: ref, error: err.message });
+        });
+      });
+    }, Promise.resolve()).then(function () {
+      quickBusy = false;
+      btn.disabled = false;
+      ta.value = failed.map(function (f) { return f.link; }).join('\n');
+      if (failed.length) {
+        status.className = 'quick-status err';
+        status.textContent = (added ? added + (added === 1 ? ' aggiunto. ' : ' aggiunti. ') : '') +
+          (failed.length === 1 ? 'Link non aggiunto: ' : failed.length + ' link non aggiunti (sono rimasti nel campo). Primo errore: ') + failed[0].error;
+      } else {
+        status.textContent = added === 1 ? 'Prodotto aggiunto in fondo alla lista.' : added + ' prodotti aggiunti in fondo alla lista.';
+      }
+    });
+  }
+  $('#btn-quick').addEventListener('click', quickAdd);
+  $('#quick-links').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); quickAdd(); }
+  });
+  $('#btn-sync-all').addEventListener('click', function () {
+    var btn = this, status = $('#quick-status');
+    var items = $$('.prod');
+    if (!items.length) return;
+    btn.disabled = true;
+    status.className = 'quick-status';
+    items.reduce(function (chain, el, i) {
+      return chain.then(function () {
+        status.textContent = 'Aggiorno ' + (i + 1) + ' di ' + items.length + '…';
+        return el._sync();
+      });
+    }, Promise.resolve()).then(function () {
+      btn.disabled = false;
+      var out = state.products.filter(function (p) { return p.outOfStock; }).length;
+      status.textContent = 'Schede aggiornate.' + (out ? ' ' + out + ' esaurit' + (out === 1 ? 'o' : 'i') + ': controlla le note.' : '');
+    });
+  });
+
+  /* ---------- Anteprima ---------- */
+  var frame = $('#frame'), timer = null;
+  function render() {
+    var html = build(state, { preview: true });
+    var y = 0;
+    try { y = frame.contentWindow.scrollY || 0; } catch (e) { /* ignore */ }
+    frame.onload = function () { try { frame.contentWindow.scrollTo(0, y); } catch (e) { /* ignore */ } };
+    frame.srcdoc = html.replace('<head>', '<head><base target="_blank">');
+
+    var kb = new Blob([build(state)]).size / 1024;
+    var size = $('#size');
+    size.textContent = 'Peso HTML ' + kb.toFixed(1) + ' KB' + (kb > 95 ? ' · rischio taglio Gmail' : '');
+    size.classList.toggle('bad', kb > 95);
+
+    var src = String(state.banner && state.banner.src || '').trim();
+    var note = $('#banner-note');
+    note.hidden = !src || (/^https:\/\/cdn\.shopify\.com\//.test(src) && !/\.webp(\?|$)/i.test(src));
+    note.textContent = /\.webp(\?|$)/i.test(src)
+      ? 'Il banner è WebP: Outlook desktop non lo mostra. Caricalo come JPG o PNG.'
+      : 'Il banner non è nei File di Shopify: caricalo in Contenuti › File e usa quel link.';
+  }
+  function schedule() {
+    clearTimeout(timer);
+    timer = setTimeout(function () { render(); persist(); }, 160);
+  }
+
+  $$('.seg button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      $$('.seg button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      $('#frame-wrap').classList.toggle('is-mobile', b.dataset.device === 'mobile');
+    });
+  });
+
+  /* ---------- Azioni ---------- */
+  var toastTimer;
+  function toast(msg) {
+    var t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 3600);
+  }
+  function download(name, content, type) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([content], { type: type }));
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  function today() { return new Date().toISOString().slice(0, 10); }
+
+  $('#btn-copy').addEventListener('click', function () {
+    var html = build(state);
+    var okMsg = 'HTML copiato: incollalo in Messaging › Code your own.';
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = html; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      ta.remove();
+      toast(ok ? okMsg : 'Copia non riuscita: usa «Scarica .html».');
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(html).then(function () { toast(okMsg); }, fallback);
+    } else fallback();
+  });
+  $('#btn-download').addEventListener('click', function () {
+    download('newsletter-genovese-' + today() + '.html', build(state), 'text/html;charset=utf-8');
+  });
+  $('#btn-export').addEventListener('click', function () {
+    download('bozza-newsletter-genovese-' + today() + '.json', JSON.stringify(state, null, 2), 'application/json');
+    toast('Bozza salvata come file .json');
+  });
+  $('#btn-import').addEventListener('click', function () { $('#file-import').click(); });
+  $('#file-import').addEventListener('change', function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        state = normalize(JSON.parse(reader.result));
+        fillForm(); renderProducts(); render(); persist();
+        toast('Bozza caricata.');
+      } catch (err) { toast('File non valido: serve un .json salvato da questo editor.'); }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  });
+  $('#btn-reset').addEventListener('click', function () {
+    if (!confirm('Ripristinare il contenuto di esempio? Le modifiche attuali andranno perse (salva prima una bozza se ti servono).')) return;
+    state = clone(DEFAULTS);
+    fillForm(); renderProducts(); render(); persist();
+    toast('Contenuto di esempio ripristinato.');
+  });
+
+  fillForm();
+  renderProducts();
+  render();
+})();
+</script>
+</body>
+</html>
