@@ -7,8 +7,8 @@
  *
  * Prezzi dei prodotti, tre modi (campo `prices`):
  *  - 'live'  : Liquid `all_products[handle]`, letto da Shopify al momento dell'invio. In Black Week
- *              mostra da solo i prezzi scritti dal motore SM Promo; se il prodotto non è più
- *              disponibile la scheda sparisce. I valori scritti nell'editor restano come riserva.
+ *              mostra da solo i prezzi scritti dal motore SM Promo. I valori scritti nell'editor restano
+ *              come riserva. Un prodotto esaurito resta in mail: Messaging rifiuta unless/and.
  *  - 'fixed' : prezzi scritti nell'HTML, come nell'editor.
  *  - 'none'  : nessun prezzo (teaser).
  *
@@ -165,20 +165,21 @@
   function priceLive(p) {
     var h = String(p.handle).replace(/'/g, '');
     var red = font(HEAD, 18, 24, 700, C.sale), blue = font(HEAD, 18, 24, 700, C.navy);
+    // Solo le istruzioni Liquid che l'editor di Messaging accetta (verificate con la prova del 30/10):
+    // assign, if/else/endif, confronto «>», filtri money/minus/times/divided_by. Niente unless, and, {%- -%}.
     return [
-      '{%- assign gm_p = all_products[\'' + h + '\'] -%}',
-      '{%- assign gm_v = gm_p.selected_or_first_available_variant -%}',
-      '{%- if gm_v -%}{%- assign gm_pr = gm_v.price -%}{%- assign gm_cp = gm_v.compare_at_price -%}{%- else -%}{%- assign gm_pr = gm_p.price -%}{%- assign gm_cp = gm_p.compare_at_price -%}{%- endif -%}',
-      '{%- if gm_pr -%}',
-      '{%- if gm_cp > gm_pr -%}',
-      '<p style="margin:0;' + red + '">{{ gm_pr | money }}&nbsp;<span style="display:inline-block;vertical-align:2px;padding:1px 6px;border-radius:4px;background:' + C.sale + ';' + font(HEAD, 12, 16, 600, C.white) + '">−{{ gm_cp | minus: gm_pr | times: 100 | divided_by: gm_cp | floor }}%</span></p>',
-      '<p style="margin:2px 0 0;' + font(HEAD, 14, 18, 600, C.subtle) + 'text-decoration:line-through;">{{ gm_cp | money }}</p>',
-      '{%- else -%}',
-      '<p style="margin:0;' + blue + '">{{ gm_pr | money }}</p>',
-      '{%- endif -%}',
-      '{%- else -%}',
+      '{% assign gm_p = all_products[\'' + h + '\'] %}',
+      '{% assign gm_v = gm_p.selected_or_first_available_variant %}',
+      '{% if gm_v.price %}',
+      '{% if gm_v.compare_at_price > gm_v.price %}',
+      '<p style="margin:0;' + red + '">{{ gm_v.price | money }}&nbsp;<span style="display:inline-block;vertical-align:2px;padding:1px 6px;border-radius:4px;background:' + C.sale + ';' + font(HEAD, 12, 16, 600, C.white) + '">−{{ gm_v.compare_at_price | minus: gm_v.price | times: 100 | divided_by: gm_v.compare_at_price }}%</span></p>',
+      '<p style="margin:2px 0 0;' + font(HEAD, 14, 18, 600, C.subtle) + 'text-decoration:line-through;">{{ gm_v.compare_at_price | money }}</p>',
+      '{% else %}',
+      '<p style="margin:0;' + blue + '">{{ gm_v.price | money }}</p>',
+      '{% endif %}',
+      '{% else %}',
       priceStatic(p.price, p.oldPrice),
-      '{%- endif -%}'
+      '{% endif %}'
     ].join('\n');
   }
 
@@ -215,11 +216,6 @@
       '<!--[if mso]></td><![endif]-->',
       '<!-- ▲ PRODOTTO ' + (i + 1) + ' ▲ -->'
     ].join('\n');
-    // Dal vivo: se al momento dell'invio il prodotto non è disponibile, la scheda non compare.
-    if (live) {
-      out = '{%- assign gm_p = all_products[\'' + String(p.handle).replace(/'/g, '') + '\'] -%}\n' +
-        '{%- unless gm_p.id and gm_p.available == false -%}\n' + out + '\n{%- endunless -%}';
-    }
     return out;
   }
 
